@@ -49,28 +49,11 @@ export const SwiperMixin = {
     }
   },
   methods: {
-    moveActiveBar (index, progress = 1) {
-      if (this.barWidths.length === 0) {
-        let topHeadList = document.querySelectorAll('.top-head')
-        this.activeBarWidth = document.querySelector('.active-bar').offsetWidth
-        this.barWidths.push(0)
-        for (let i = 1; i < topHeadList.length; i++) {
-          const w = topHeadList[i].offsetWidth / 2
-          const preW = topHeadList[i - 1].offsetWidth / 2
-          this.barWidths.push(w + preW)
-        }
-      }
-      let disc = 0
-      for (let i = 0; i <= index; i++) {
-        if (i === index) {
-          disc += this.barWidths[i] * progress
-        } else {
-          disc += this.barWidths[i]
-        }
-      }
-      this.$refs.activeBar.style.transform = `translateX(${disc}px)`
-    },
-    moveActiveBar3 (index, nextIndex, progress = 1) {
+    /**
+     * bar 宽度会变
+     * bar 宽度变化百分比与 progress 一致
+     */
+    moveActiveBar (index, nextIndex, progress = 1) {
       if (this.barWidths.length === 0) {
         let topHeadList = document.querySelectorAll('.top-head')
         this.activeBarWidth = document.querySelector('.active-bar').offsetWidth
@@ -107,7 +90,13 @@ export const SwiperMixin = {
         this.$refs.activeBar.style.width = `${width}px`
       }
     },
-    moveActiveBar2 (index, nextIndex, progress = 1, callByClick = false) {
+    /**
+     * bar 宽度会变
+     * bar 宽度变化百分比是 progress 的 2 倍
+     * progress 小于 0.5 时，bar 宽度正方向增加
+     * progress 大于 0.5 时，bar 宽度反方向减少
+     */
+    moveActiveBar1 (index, nextIndex, progress = 1, callByClick = false) {
       if (this.barWidths.length === 0) {
         let topHeadList = document.querySelectorAll('.top-head')
         this.activeBarWidth = document.querySelector('.active-bar').offsetWidth
@@ -156,6 +145,46 @@ export const SwiperMixin = {
           this.$refs.activeBar.style.transform = `translateX(${disc}px)`
           this.$refs.activeBar.style.width = `${width}px`
         }
+      }
+    },
+    /**
+     * bar 距离改变，宽度不变
+     * bar 距离变化百分比与 progress 一致
+     */
+    moveActiveBar2 (index, nextIndex, progress = 1, callByClick = false) {
+      if (this.barWidths.length === 0) {
+        let topHeadList = document.querySelectorAll('.top-head')
+        this.activeBarWidth = document.querySelector('.active-bar').offsetWidth
+        this.barWidths.push(0)
+        for (let i = 1; i < topHeadList.length; i++) {
+          const w = topHeadList[i].offsetWidth / 2
+          const preW = topHeadList[i - 1].offsetWidth / 2
+          this.barWidths.push(w + preW)
+        }
+      }
+      let disc = this.barWidths.reduce((sum, value, i) => {
+        if (i <= nextIndex) {
+          return sum + value
+        } else {
+          return sum
+        }
+      })
+      if (callByClick) {
+        this.$refs.activeBar.style.transition = 'all 0.3s'
+        this.$refs.activeBar.style.transform = `translateX(${disc}px)`
+        return
+      }
+      let progressDistance = 0
+      if (index < nextIndex) {
+        // 向右
+        this.$refs.activeBar.style.transition = 'all 0s'
+        progressDistance = this.barWidths[nextIndex] * progress
+        this.$refs.activeBar.style.transform = `translateX(${disc - this.barWidths[nextIndex] + progressDistance}px)`
+      } else if (index > nextIndex) {
+        // 向左
+        this.$refs.activeBar.style.transition = 'all 0s'
+        progressDistance = this.barWidths[index] * Math.abs(progress)
+        this.$refs.activeBar.style.transform = `translateX(${disc + this.barWidths[index] - progressDistance}px)`
       }
     }
   },
