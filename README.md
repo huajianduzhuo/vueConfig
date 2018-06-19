@@ -35,8 +35,12 @@ axios 请求封装，包括如下功能：
 
 ## plugins
 
-依赖包改写
+插件
 
 ### scrollbar
 
 为实现固定表头和列的表格，改写 element-ui 的 scrollbar，使之可以支持固定位置的内容
+
+### LongTap
+
+自定义长按事件插件，添加长按指令 `v-longtap`，具体使用方式查看 `plugins/LongTap/readme.md`
