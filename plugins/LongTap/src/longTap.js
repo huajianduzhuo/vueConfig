@@ -45,11 +45,11 @@ export default {
          * 不能是：v-longtap = "cb()"，这种形式绑定时就会执行 cb
          */
         if (typeof value === 'function') {
-          value(el, vNode)
+          value(event, el, vNode)
           event.preventDefault()
           return
         } else if (value && value.handler && typeof value.handler === 'function') {
-          value.handler(el, vNode)
+          value.handler(event, el, vNode)
           event.preventDefault()
           return
         }
