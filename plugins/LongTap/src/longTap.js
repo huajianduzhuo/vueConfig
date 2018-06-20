@@ -1,6 +1,8 @@
-let r = null // setTimeout 标志
+let r = null, // setTimeout 标志
+    cr = null // 改变长按元素样式的定时器
 let startX = 0, // touchstart 时手指的位置，用于 touchmove 时判断手指是否移动
     startY = 0
+let firstTouch = false
 
 export default {
   inserted (el, binding, vNode) {
@@ -31,6 +33,15 @@ export default {
      * 如果正存在一个长按事件，则本次不执行（最下面为 document 绑定 click 事件，用于取消一次已经触发的长按事件）
      */
     el.addEventListener('touchstart', event => {
+      firstTouch = true
+      /** 
+       * touchend 时延迟删除元素样式
+       * 防止多次点击样式延迟删除导致长按时样式被删除
+       */
+      if (cr) {
+        clearTimeout(cr)
+        cr = null
+      }
       addActiveClass(el, true)
       let touch = event.changedTouches[0]
       startX = touch.clientX
@@ -65,11 +76,12 @@ export default {
       let diffX = Math.abs(touch.clientX - startX)
       let diffY = Math.abs(touch.clientY - startY)
       if ((disX > 0 && diffX > disX) || (disY > 0 && diffY > disY)) {
-        addActiveClass(el, false)
+        firstTouch && addActiveClass(el, false)
         if (r) {
           clearTimeout(r)
           r = null
         }
+        firstTouch = false
       }
       touch = null
     }, false)
@@ -78,7 +90,10 @@ export default {
      * 手指离开时，如果时间没有超过 delayTime，则不是长按事件，取消 timeout
      */
     el.addEventListener('touchend', event => {
-      addActiveClass(el, false)
+      firstTouch = false
+      cr = setTimeout(() => {
+        addActiveClass(el, false)
+      }, 100)
       if (r) {
         clearTimeout(r)
         r = null
@@ -92,6 +107,7 @@ function addActiveClass(el, opt) {
   let index = cns.indexOf('longtap-active')
   if (opt) {
     if (index === -1) {
+      el.style.transition = 'all 0.3s'
       cns.push('longtap-active')
       el.className = cns.join(' ')
     }
@@ -99,6 +115,7 @@ function addActiveClass(el, opt) {
     if (index > -1) {
       cns.splice(index, 1)
       el.className = cns.join(' ')
+      el.style.transition = 'all 0s'
     }
   }
 }
