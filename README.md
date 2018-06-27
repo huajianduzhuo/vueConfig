@@ -23,6 +23,14 @@ axios 请求封装，包括如下功能：
 
 使用 WebViewJavascriptBridge，实现前端与 IOS 端沟通
 
+### storage.js
+
+封装操作 localStorage、sessionStorage、cookie 的 get、set、remove 方法
+
+### storageEvent.js
+
+使用 localStorage 实现多页面共享 sessionStorage
+
 ### swiper-mixin（待完善）
 
 使用 vue-awesome-swiper 实现 tab 页左右滑动
