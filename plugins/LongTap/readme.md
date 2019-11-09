@@ -15,11 +15,11 @@
 
 ## 注册长按事件
 
-`<div v-longtap="callback"></div>`
+`<div v-longtap:[arg]="callback"></div>`
 
 或
 
-`<div v-longtap="{handler: cb}"></div>`
+`<div v-longtap:[arg]="{handler: cb}"></div>`
 
 ## 对象字面量配置参数
 
@@ -37,7 +37,7 @@
 | 参数  | 类型    | 说明                   |
 | :---: | :-----: | :--------------------: |
 | event | Event   |                        |
-| el    | DOM元素 | 触发长按事件的元素     |
+| data  | any     | 注册事件时传入的动态指令参数     |
 | vNode | vNode   | 触发长按事件的虚拟节点 |
 
 ## 长按时元素样式
