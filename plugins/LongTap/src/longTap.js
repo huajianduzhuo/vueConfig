@@ -6,10 +6,11 @@ let firstTouch = false
 
 export default {
   inserted (el, binding, vNode) {
-    let delayTime = 1200
+    let delayTime = 350
     let disX = 10,
         disY = 10
     let value = binding.value
+    let data = binding.arg
     /** 
      * 可通过传入对象字面量的方式，指定长按时间：v-longtap = "{time: 2000}"
      * 时间必须超过 500ms
@@ -56,11 +57,11 @@ export default {
          * 不能是：v-longtap = "cb()"，这种形式绑定时就会执行 cb
          */
         if (typeof value === 'function') {
-          value(event, el, vNode)
+          value(event, data, vNode)
           event.preventDefault()
           return
         } else if (value && value.handler && typeof value.handler === 'function') {
-          value.handler(event, el, vNode)
+          value.handler(event, data, vNode)
           event.preventDefault()
           return
         }
@@ -99,6 +100,12 @@ export default {
         r = null
       }
     }, false)
+    /** 
+     * 禁止手机浏览器菜单
+     */
+    el.addEventListener('contextmenu', event => {
+      event.preventDefault()
+    })
   }
 }
 
